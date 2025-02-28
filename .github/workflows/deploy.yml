@@ -1,0 +1,30 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Deploy to server
+      run: |
+        echo "${{ secrets.PEM_FILE }}" > private_key.pem
+        chmod 600 private_key.pem
+        ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@${{ secrets.SERVER_URL }} << 'EOF'
+          cd /var/www/
+          sudo rm -rf y_fi_frontend
+          sudo git clone https://github.com/snigdho48/y_fi_frontend.git /var/www/y_fi_frontend
+          sudo chown -R www-data:www-data /var/www/y_fi_frontend/dist
+          sudo chmod -R 755 /var/www/y_fi_frontend/dist
+          sudo systemctl daemon-reload
+          sudo systemctl restart nginx
+          echo "Deployment successful"
+        EOF
+        rm -f private_key.pem  # Cleanup after execution
