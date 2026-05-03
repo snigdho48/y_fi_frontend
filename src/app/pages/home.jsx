@@ -64,8 +64,8 @@ function Home() {
    };
 
   return (
-    <div className='w-full min-h-[90vh] flex flex-col justify-center items-center gap-10'>
-      <h1 className='text-4xl font-bold'>Get Free WiFi With</h1>
+    <div className="flex w-full min-h-[85vh] flex-col items-center justify-center gap-10 px-4">
+      <h1 className="text-4xl font-bold text-slate-50">Get Free WiFi With</h1>
       <img src='logo.png' alt='logo' className='w-[50%]' />
 
       <div className='flex gap-5'>
