@@ -1,0 +1,14 @@
+---
+description: Auto-update frontend changelog and workflow docs after every file change
+alwaysApply: true
+---
+
+# Frontend Auto-Changelog
+
+When you edit ANY file under `y_fi_frontend/`, automatically before your final response:
+
+1. Prepend to `y_fi_frontend/.cursor/workflow/changelog.md` with timestamp `YYYY-MM-DD HH:MM (UTC+6)`
+2. Update `api-integration.md` if API usage changed
+3. Update `pages-and-routes.md` if routes/components changed
+
+Do not wait for the user to say "update changelog". Mandatory on every code-changing turn.

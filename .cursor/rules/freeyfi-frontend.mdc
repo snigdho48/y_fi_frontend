@@ -1,0 +1,29 @@
+---
+description: FreeYFi frontend rules — marketing site conventions
+alwaysApply: true
+---
+
+# FreeYFi Frontend Rules
+
+## Before coding
+Read `y_fi_frontend/.cursor/workflow/README.md`.
+
+## After coding
+Append to `.cursor/workflow/changelog.md` with `YYYY-MM-DD HH:MM (UTC+6)`. Update `api-integration.md` if API usage changes. Automatic — see `auto-changelog.mdc`.
+
+## Stack
+React 18 + Vite 6 + Tailwind 4 + React Router 7. JavaScript only (no TS).
+
+## API calls
+Use `API_BASE` from `src/lib/api.js` for all backend requests. Do not hardcode production URLs.
+
+## Pages
+- `src/app/pages/` — Home, Contact, Privacy
+- `src/routes.js` — route table
+- `src/app/mainoutlate.jsx` — layout shell
+
+## Deploy
+CI serves committed `dist/`. Run `yarn build` before deploy if UI changed.
+
+## Multi-model review
+Use for contact form API changes, APK download flow, or privacy policy updates.

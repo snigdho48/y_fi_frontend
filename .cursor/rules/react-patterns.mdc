@@ -1,0 +1,27 @@
+---
+description: React/JSX patterns for y_fi_frontend
+globs: y_fi_frontend/**/*.{jsx,js}
+alwaysApply: false
+---
+
+# Frontend JSX Conventions
+
+```javascript
+// API base — always use this
+import { API_BASE } from "@/lib/api";
+
+// Fetch pattern
+const res = await fetch(`${API_BASE}/contact/`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json", "Accept": "application/json" },
+  body: JSON.stringify(payload),
+});
+
+// Styling — Tailwind + cn() helper
+import { cn } from "@/lib/utils";
+```
+
+- Functional components only
+- Local `useState` for form/fetch state (Redux is scaffolded but unused)
+- New pages: add to `routes.js` + `App.jsx` + `navmenu.jsx`
+- Document in `.cursor/workflow/pages-and-routes.md`
