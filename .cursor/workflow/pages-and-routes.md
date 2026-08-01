@@ -9,6 +9,10 @@ Defined in `src/routes.js`, rendered in `App.jsx` under `MainOutlate` layout.
 | `/` | Home | `src/app/pages/home.jsx` | Hero, dual APK download buttons |
 | `/contact` | Contact | `src/app/pages/contact.jsx` | Contact form → backend |
 | `/privacy` | Privacy | `src/app/pages/privacy.jsx` | Renders `legal/PRIVACY_POLICY.md` |
+| `/admin/login` | AdminLogin | `src/app/pages/admin/login.jsx` | Theme Studio login |
+| `/admin/theme` | ThemeEditor | `src/app/pages/admin/theme-editor.jsx` | Theme Studio |
+
+On the production droplet these SPA paths share the domain with `y_fi_backend`. Nginx sends `/api/` and `/django-admin/` to Gunicorn; everything else (including `/admin/*`) goes to `dist/` via `try_files`.
 
 ## Layout (`mainoutlate.jsx`)
 

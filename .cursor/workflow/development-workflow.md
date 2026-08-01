@@ -26,13 +26,19 @@ Agents MUST prepend [changelog.md](./changelog.md) with `YYYY-MM-DD HH:MM (UTC+6
 
 ## Deploy
 
-Push to `master` → GitHub Actions SSH deploy → nginx serves `/var/www/y_fi_frontend/dist/`
+```bash
+sudo bash deploy/deploy.sh
+```
+
+Or push to `master` → GitHub Actions runs the same script on the droplet.
+
+Default path: `/var/www/y_fi_frontend/dist` (must match backend `FRONTEND_DIR`).
 
 ## AI agent guidelines
 
 ### Scope
 - Minimal diffs; match existing JSX + Tailwind patterns
-- Use `API_BASE` from `lib/api.js` for all API calls (fix Home hardcoding when touching that file)
+- Admin: `DASHBOARD_API_BASE` only. Marketing contact: `APP_API_BASE` (see `api-integration.md`)
 - Do not add TypeScript unless explicitly requested
 
 ### Multi-model review triggers

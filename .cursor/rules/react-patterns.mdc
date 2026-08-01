@@ -8,10 +8,10 @@ alwaysApply: false
 
 ```javascript
 // API base — always use this
-import { API_BASE } from "@/lib/api";
+import { APP_API_BASE } from "@/lib/api";
 
-// Fetch pattern
-const res = await fetch(`${API_BASE}/contact/`, {
+// Fetch pattern (marketing contact — not admin)
+const res = await fetch(`${APP_API_BASE}/contact/`, {
   method: "POST",
   headers: { "Content-Type": "application/json", "Accept": "application/json" },
   body: JSON.stringify(payload),

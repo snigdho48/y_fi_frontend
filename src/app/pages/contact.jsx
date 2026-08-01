@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { API_BASE } from "@/lib/api";
+import { APP_API_BASE } from "@/lib/api";
 import "../../App.css";
 
 function Contact() {
@@ -15,7 +15,7 @@ function Contact() {
     setStatus(null);
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/contact/`, {
+      const res = await fetch(`${APP_API_BASE}/contact/`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({ name: name.trim(), email: email.trim(), message: message.trim() }),

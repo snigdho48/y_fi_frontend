@@ -9,6 +9,10 @@ lerna-debug.log*
 
 node_modules
 
+# Yarn PnP (not used — nodeLinker: node-modules in .yarnrc.yml)
+.pnp.cjs
+.pnp.loader.mjs
+
 *.local
 
 # Editor directories and files

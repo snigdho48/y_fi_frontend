@@ -6,6 +6,126 @@ All changes to `y_fi_frontend` must be logged here newest-first.
 
 ---
 
+## 2026-08-01 00:06 (UTC+6) — Rename script to deploy.sh
+
+**Time:** 2026-08-01 00:06 (UTC+6)
+**Author:** Cursor AI agent
+**Type:** Enhancement
+
+### Changed
+- `deploy/freeyfi-frontend.sh` → `deploy/deploy.sh`
+
+### API impact
+- None
+
+### DB impact
+- None
+
+---
+
+## 2026-07-31 23:59 (UTC+6) — Deploy path /var/www/y_fi_frontend
+
+**Time:** 2026-07-31 23:59 (UTC+6)
+**Author:** Cursor AI agent
+**Type:** Enhancement
+
+### Changed
+- Default `FRONTEND_DIR` / docs / CI → `/var/www/y_fi_frontend` (same droplet layout as backend)
+
+### API impact
+- None
+
+### DB impact
+- None
+
+---
+
+## 2026-07-31 23:55 (UTC+6) — Same-domain frontend deploy script
+
+**Time:** 2026-07-31 23:55 (UTC+6)
+**Author:** Cursor AI agent
+**Type:** Enhancement
+
+### Changed
+- `deploy/freeyfi-frontend.sh` — separate SPA deploy (yarn build + dist permissions + nginx reload)
+- `deploy/README.md` — route split vs backend (`/admin/*` SPA vs `/django-admin/` Django)
+- `.env.example`, `.github/workflows/deploy.yml` — production same-origin API + scripted deploy
+- Workflow docs / README — same-domain topology
+
+### API impact
+- None (Theme Studio still uses dashboard-backend; contact uses `VITE_APP_API_BASE`)
+
+### DB impact
+- None
+
+---
+
+## 2026-07-09 14:06 (UTC+6) — Admin frontend uses dashboard-backend only
+
+**Time:** 2026-07-09 14:06 (UTC+6)  
+**Author:** Cursor AI agent  
+**Type:** Architecture
+
+### Changed
+- `.env` / `.env.example` — only `VITE_DASHBOARD_API_BASE` for admin
+- `src/lib/api.js` — `DASHBOARD_API_BASE` (admin) + `APP_API_BASE` (marketing contact only)
+- `contact.jsx` — uses `APP_API_BASE`, not admin dashboard
+- `api-integration.md`, `freeyfi-frontend.mdc` — document admin vs marketing split
+- Removed debug instrumentation from `theme-api.js`
+
+### API impact
+- Admin routes connect only to dashboard-backend
+
+---
+
+## 2026-07-09 13:15 (UTC+6) — Theme API points to dashboard-backend
+
+**Time:** 2026-07-09 13:15 (UTC+6)  
+**Author:** Cursor AI agent  
+**Type:** Refactor
+
+### Changed
+- `src/lib/api.js` — `DASHBOARD_API_BASE` for theme studio
+- `src/lib/theme-api.js` — all theme/admin calls use dashboard API
+- `.env` — `VITE_DASHBOARD_API_BASE=http://127.0.0.1:8001/api`
+
+---
+
+## 2026-07-09 12:28 (UTC+6) — Theme active checkbox (single active per app)
+
+**Time:** 2026-07-09 12:28 (UTC+6)  
+**Author:** Cursor AI agent  
+**Type:** Enhancement
+
+### Changed
+- `src/app/pages/admin/theme-editor.jsx` — checkbox to activate/deactivate themes; only one active per app target; warning when none active (default palette used)
+- `src/lib/theme-api.js` — `setThemeActive(id, isActive)` helper
+
+### API impact
+- Uses `POST /admin/theme/:id/activate/` and `PATCH` with `is_active: false`
+
+---
+
+## 2026-07-09 11:30 (UTC+6) — Admin Theme Studio (login + editor + preview)
+
+**Time:** 2026-07-09 11:30 (UTC+6)  
+**Author:** Cursor AI agent  
+**Type:** Feature
+
+### Added
+- `/admin/login` — admin JWT login (`auth/admin/login/`)
+- `/admin/theme` — Theme Studio with palette, font, per-section colors, phone preview
+- `src/lib/auth.js`, `src/lib/theme-api.js`, `src/app/adminlayout.jsx`
+- `src/app/pages/admin/login.jsx`, `src/app/pages/admin/theme-editor.jsx`
+
+### Changed
+- `src/App.jsx` — admin routes outside marketing layout
+
+### API impact
+- Consumes new theme admin + public endpoints
+
+---
+
 ## 2026-07-09 11:23 (UTC+6) — Auto-documentation rules + timestamp format
 
 **Time:** 2026-07-09 11:23 (UTC+6)  

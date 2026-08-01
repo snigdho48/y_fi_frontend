@@ -36,7 +36,7 @@ y_fi_frontend/
 │   │   └── navigation-menu.jsx     # Installed but unused
 │   ├── legal/PRIVACY_POLICY.md
 │   ├── lib/
-│   │   ├── api.js                  # API_BASE constant
+│   │   ├── api.js                  # DASHBOARD_API_BASE + APP_API_BASE
 │   │   └── utils.js                # cn() helper
 │   ├── App.jsx                     # Route definitions
 │   ├── main.jsx                    # Entry: Router + Redux Provider
@@ -63,16 +63,20 @@ y_fi_frontend/
 
 ## Deployment
 
-`.github/workflows/deploy.yml`:
-1. Push to `master`
-2. SSH to Ubuntu → clone/pull to `/var/www/y_fi_frontend`
-3. Nginx serves committed `dist/` (no CI build step)
+Same droplet as `y_fi_backend` — domain root is this SPA; `/api/` and `/django-admin/` are backend.
 
-**Implication:** Run `yarn build` locally and commit `dist/` before deploy, or update CI to build.
+```bash
+sudo bash deploy/deploy.sh
+```
+
+`.github/workflows/deploy.yml` SSHs and runs that script (yarn build on server → `dist/`).
+
+Nginx site file is installed by `y_fi_backend/deploy/deploy.sh` only.
 
 ## Known gaps
 
 - Redux store wired but no component uses it
 - `NavigationMenu` component unused; custom nav in `mainoutlate.jsx`
-- Home page hardcodes API URL; Contact uses `VITE_API_BASE`
+- Admin `/admin/*` uses `VITE_DASHBOARD_API_BASE` only (dashboard-backend)
+- Home page hardcodes APK URLs; Contact uses `APP_API_BASE` (y_fi_backend)
 - Referenced assets (`logo.png`, etc.) may be missing from repo

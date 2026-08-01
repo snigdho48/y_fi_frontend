@@ -1,77 +1,50 @@
 # API Integration
 
-**Backend base:** `https://app.freeyfi.com/api/`  
-**Config:** `src/lib/api.js`
+## Admin Theme Studio → dashboard-backend ONLY
+
+**Config:** `src/lib/api.js` → `DASHBOARD_API_BASE`  
+**Env:** `VITE_DASHBOARD_API_BASE` (required for `/admin/*`)
 
 ```javascript
-export const API_BASE =
-  import.meta.env.VITE_API_BASE ?? "https://app.freeyfi.com/api";
+export const DASHBOARD_API_BASE =
+  import.meta.env.VITE_DASHBOARD_API_BASE ?? "https://dashboard.freeyfi.com/api";
 ```
 
-## Endpoints used
+| Admin route | Backend | Endpoints |
+|-------------|---------|-----------|
+| `/admin/login` | dashboard-backend | `POST /auth/admin/login/` |
+| `/admin/theme` | dashboard-backend | `/admin/theme/*`, `/admin/theme/defaults/` |
 
-| Page | Method | Endpoint | Uses API_BASE? |
-|------|--------|----------|----------------|
-| Home | GET | `/release/app/` | ❌ Hardcoded full URL |
-| Home | GET | `/partner/app/` | ❌ Hardcoded full URL |
-| Contact | POST | `/contact/` | ✅ `${API_BASE}/contact/` |
+All admin API calls go through `src/lib/theme-api.js` — never `y_fi_backend`.
 
-## Request/response contracts
+See `dashboard-backend/.cursor/workflow/api-reference.md` for full contract.
 
-### GET `/release/app/` and `/partner/app/`
+### Local `.env`
 
-**Response:**
-```json
-{ "url": "https://app.freeyfi.com/media/apps/..." }
+```env
+VITE_DASHBOARD_API_BASE=http://127.0.0.1:8001/api
 ```
 
-Client opens `url` in new browser tab. Backend increments download counter.
+Restart Vite after changing `.env`.
 
-### POST `/contact/`
+---
 
-**Request:**
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "message": "At least 10 characters here"
-}
-```
+## Marketing site → y_fi_backend (not admin)
 
-**Headers:** `Content-Type: application/json`, `Accept: application/json`
+**Config:** `APP_API_BASE` — production default, optional `VITE_APP_API_BASE` for local contact testing.
 
-**Success:** Server message string, form cleared  
-**Error:** Django field errors flattened to user-facing string
+| Page | Method | Endpoint |
+|------|--------|----------|
+| Home | GET | `/release/app/`, `/partner/app/` (hardcoded production URL today) |
+| Contact | POST | `/contact/` via `APP_API_BASE` |
 
-## Integration pattern
+Admin pages do **not** use `APP_API_BASE`.
 
-No centralized API client. Each page uses native `fetch`:
-
-```javascript
-// Contact pattern (preferred)
-const res = await fetch(`${API_BASE}/contact/`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json", "Accept": "application/json" },
-  body: JSON.stringify({ name, email, message }),
-});
-
-// Home pattern (should migrate to API_BASE)
-const res = await fetch("https://app.freeyfi.com/api/release/app/");
-```
+---
 
 ## Environment variables
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `VITE_API_BASE` | `https://app.freeyfi.com/api` | API root (Contact only today) |
-
-No `.env.example` in repo. Create `.env.local` for local backend testing:
-```
-VITE_API_BASE=http://127.0.0.1:8000/api
-```
-
-## Alignment with backend
-
-See `y_fi_backend/.cursor/workflow/api-reference.md` for full backend contract.
-
-When backend contact or APK endpoints change, update this file and `pages-and-routes.md`.
+| Variable | Required for admin? | Default | Purpose |
+|----------|---------------------|---------|---------|
+| `VITE_DASHBOARD_API_BASE` | **Yes** | `https://dashboard.freeyfi.com/api` | Theme Studio + admin login |
+| `VITE_APP_API_BASE` | No | `https://app.freeyfi.com/api` | Contact form only (marketing) |
