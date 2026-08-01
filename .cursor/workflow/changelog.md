@@ -6,6 +6,25 @@ All changes to `y_fi_frontend` must be logged here newest-first.
 
 ---
 
+## 2026-08-01 15:45 (UTC+6) — Mobile-responsive marketing layout
+
+**Time:** 2026-08-01 15:45 (UTC+6)
+**Author:** Cursor AI agent
+**Type:** Enhancement
+
+### Changed
+- `home.jsx` — stacked full-width CTAs on small screens; constrained logo; fluid headline
+- `mainoutlate.jsx` — brand + hamburger header; prevent horizontal overflow
+- `index.css` / `App.css` / contact + privacy — clamp headings; privacy table scroll; tighter mobile padding
+
+### API impact
+- Home APK fetches use `APP_API_BASE` (same as contact)
+
+### DB impact
+- None
+
+---
+
 ## 2026-08-01 15:28 (UTC+6) — No dashboard.freeyfi; /admin is Django
 
 **Time:** 2026-08-01 15:28 (UTC+6)

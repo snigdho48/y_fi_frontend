@@ -5,7 +5,7 @@ import "../../App.css";
 
 function Privacy() {
   return (
-    <article className="privacy-md privacy-md--dark mx-auto w-full max-w-3xl px-4 py-10 text-slate-300">
+    <article className="privacy-md privacy-md--dark mx-auto w-full max-w-3xl overflow-x-hidden px-4 py-8 text-slate-300 sm:py-10">
       <ReactMarkdown remarkPlugins={[remarkGfm]}>{privacyMd}</ReactMarkdown>
     </article>
   );

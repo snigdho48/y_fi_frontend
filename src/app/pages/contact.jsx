@@ -41,18 +41,18 @@ function Contact() {
   };
 
   return (
-    <div className="w-full min-h-[85vh] flex flex-col items-center px-4 py-12">
-      <div className="w-full max-w-lg space-y-8">
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-slate-50">Contact us</h1>
-          <p className="text-slate-400">
+    <div className="flex w-full min-h-[85vh] flex-col items-center px-4 py-8 sm:py-12">
+      <div className="w-full max-w-lg space-y-6 sm:space-y-8">
+        <div className="space-y-2 text-center">
+          <h1 className="text-2xl font-bold text-slate-50 sm:text-3xl">Contact us</h1>
+          <p className="text-sm text-slate-400 sm:text-base">
             Questions about Y FI, partnerships, or privacy — send a message and we will reply by email.
           </p>
         </div>
 
         <form
           onSubmit={submit}
-          className="space-y-4 rounded-xl border border-slate-600 bg-slate-800/80 p-6 shadow-lg backdrop-blur"
+          className="space-y-4 rounded-xl border border-slate-600 bg-slate-800/80 p-4 shadow-lg backdrop-blur sm:p-6"
         >
           <div>
             <label htmlFor="contact-name" className="mb-1 block text-sm font-medium text-slate-300">
