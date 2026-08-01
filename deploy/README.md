@@ -36,6 +36,19 @@ sudo bash deploy/deploy.sh
 VITE_APP_API_BASE=https://app.freeyfi.com/api
 ```
 
+## Troubleshooting
+
+### Stuck at `yarn install + build`
+
+1. Ctrl+C the hung run.
+2. Check RAM: `free -h` (need swap from backend `deploy.sh`).
+3. Confirm Yarn Berry, not classic: `yarn -v` should be `4.x` (not `1.x`).
+4. Re-run: `sudo bash deploy/deploy.sh` — script prints progress for install then build separately.
+
+Classic Yarn (`1.22`) mis-handles this repo’s Berry lockfile and often looks hung.
+
+---
+
 ## Order on a new droplet
 
 1. `sudo bash /var/www/y_fi_backend/deploy/deploy.sh` — nginx + SSL + API  

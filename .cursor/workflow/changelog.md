@@ -6,6 +6,25 @@ All changes to `y_fi_frontend` must be logged here newest-first.
 
 ---
 
+## 2026-08-01 15:16 (UTC+6) — Unstick yarn install on 1 GB droplet
+
+**Time:** 2026-08-01 15:16 (UTC+6)
+**Author:** Cursor AI agent
+**Type:** Bugfix
+
+### Changed
+- `deploy/deploy.sh` — Corepack Yarn 4 only (no classic), live install/build logs, `HUSKY=0`, lower Yarn concurrency, no silent `2>/dev/null`
+- `.yarnrc.yml` — `enableScripts: false`, `enableTelemetry: false` for non-interactive server deploys
+- `deploy/README.md` — troubleshooting stuck yarn
+
+### API impact
+- None
+
+### DB impact
+- None
+
+---
+
 ## 2026-08-01 15:13 (UTC+6) — Frontend deploy: main API only
 
 **Time:** 2026-08-01 15:13 (UTC+6)

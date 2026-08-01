@@ -17,6 +17,8 @@ set -euo pipefail
 FRONTEND_DIR="${FRONTEND_DIR:-/var/www/y_fi_frontend}"
 BRANCH="${BRANCH:-master}"
 NODE_MAJOR="${NODE_MAJOR:-20}"
+# Yarn Berry lockfile (__metadata version: 10) — do NOT use Yarn 1 classic.
+YARN_VERSION="${YARN_VERSION:-4.9.2}"
 
 echo "==> FreeYFi frontend deploy @ $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
@@ -33,6 +35,14 @@ fi
 
 DIST_DIR="${FRONTEND_DIR}/dist"
 export DEBIAN_FRONTEND=noninteractive
+# Skip husky / lifecycle prompts that can hang non-interactive deploys
+export HUSKY=0
+export CI=1
+export YARN_ENABLE_IMMUTABLE_INSTALLS=false
+export YARN_ENABLE_TELEMETRY=0
+# Low concurrency keeps RAM usable on 1 GB droplets (+ swap)
+export YARN_NETWORK_CONCURRENCY="${YARN_NETWORK_CONCURRENCY:-4}"
+export YARN_CHILD_CONCURRENCY="${YARN_CHILD_CONCURRENCY:-2}"
 
 env_get() {
   local key="$1" default="${2:-}"
@@ -57,7 +67,7 @@ fi
 
 cd "${FRONTEND_DIR}"
 
-# ----- Node + Yarn (Corepack) -----
+# ----- Node + Yarn Berry via Corepack (matches yarn.lock) -----
 echo "==> Node.js ${NODE_MAJOR}"
 if ! command -v node >/dev/null 2>&1 \
   || [[ "$(node -v 2>/dev/null | sed 's/^v//' | cut -d. -f1)" -lt "${NODE_MAJOR}" ]]; then
@@ -72,15 +82,26 @@ if ! command -v node >/dev/null 2>&1 \
   apt-get install -y nodejs
 fi
 
-corepack enable >/dev/null 2>&1 || true
-# Prefer yarn from Corepack; fall back to npm global
-if ! command -v yarn >/dev/null 2>&1; then
-  npm install -g yarn@1.22.22 2>/dev/null || corepack prepare yarn@stable --activate
+echo "    node $(node -v)  npm $(npm -v)"
+
+# Remove Yarn classic if present — it hangs/misbehaves with this lockfile
+if command -v yarn >/dev/null 2>&1; then
+  YARN_MAJ="$(yarn -v 2>/dev/null | cut -d. -f1 || echo 0)"
+  if [[ "${YARN_MAJ}" -lt 2 ]]; then
+    echo "==> Removing Yarn classic $(yarn -v) (need Berry ${YARN_VERSION})"
+    npm uninstall -g yarn >/dev/null 2>&1 || true
+    rm -f /usr/local/bin/yarn /usr/bin/yarn 2>/dev/null || true
+  fi
 fi
 
+echo "==> Corepack Yarn ${YARN_VERSION}"
+corepack enable
+# Non-interactive; downloads yarn once then caches
+corepack prepare "yarn@${YARN_VERSION}" --activate
+hash -r 2>/dev/null || true
+echo "    yarn $(yarn -v)"
+
 # ----- .env for production build (same-origin y_fi_backend only) -----
-# Dashboard API is not configured here — Theme Studio keeps its code default
-# or a local .env when you work on dashboard-backend separately.
 if [[ ! -f "${FRONTEND_DIR}/.env" ]]; then
   if [[ -f "${FRONTEND_DIR}/.env.production.example" ]]; then
     cp "${FRONTEND_DIR}/.env.production.example" "${FRONTEND_DIR}/.env"
@@ -108,15 +129,25 @@ else
   echo "==> No git remote — building local tree"
 fi
 
-echo "==> yarn install + build"
-# Cap Node heap on 1 GB droplets
-export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=512}"
-# Prefer Yarn Berry if project has yarn.lock + .yarnrc.yml
-if [[ -f "${FRONTEND_DIR}/.yarnrc.yml" ]]; then
-  yarn install --immutable 2>/dev/null || yarn install
-else
-  yarn install --frozen-lockfile 2>/dev/null || yarn install
+# Re-apply production .env after reset (git may not track .env)
+if [[ ! -f "${FRONTEND_DIR}/.env" ]] && [[ -f "${FRONTEND_DIR}/.env.production.example" ]]; then
+  cp "${FRONTEND_DIR}/.env.production.example" "${FRONTEND_DIR}/.env"
 fi
+grep -qE '^VITE_APP_API_BASE=' "${FRONTEND_DIR}/.env" 2>/dev/null \
+  || echo "VITE_APP_API_BASE=${APP_API}" >>"${FRONTEND_DIR}/.env"
+
+echo "==> free -h (expect swap if RAM is tight)"
+free -h || true
+
+echo "==> yarn install (this can take several minutes on 1 GB)"
+# Leave Node heap unset for install — Yarn Berry OOMs oddly if capped too low.
+unset NODE_OPTIONS || true
+# Show live output; never swallow stderr
+yarn install --inline-builds
+
+echo "==> yarn build"
+# Cap heap only for Vite build
+export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=768}"
 yarn build
 
 if [[ ! -f "${DIST_DIR}/index.html" ]]; then
@@ -128,7 +159,6 @@ echo "==> Permissions"
 chown -R www-data:www-data "${DIST_DIR}"
 chmod -R 755 "${DIST_DIR}"
 
-# Reload nginx only — do not replace freeyfi site (backend owns routing)
 if command -v nginx >/dev/null 2>&1; then
   echo "==> nginx reload"
   nginx -t && systemctl reload nginx
