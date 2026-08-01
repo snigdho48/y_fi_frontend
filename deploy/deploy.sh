@@ -101,7 +101,9 @@ corepack prepare "yarn@${YARN_VERSION}" --activate
 hash -r 2>/dev/null || true
 echo "    yarn $(yarn -v)"
 
-# ----- .env for production build (same-origin y_fi_backend only) -----
+# ----- .env for production build (marketing SPA only) -----
+# /admin on this domain is Django admin (nginx → y_fi_backend), not Theme Studio.
+# Do not set VITE_DASHBOARD_API_BASE here.
 if [[ ! -f "${FRONTEND_DIR}/.env" ]]; then
   if [[ -f "${FRONTEND_DIR}/.env.production.example" ]]; then
     cp "${FRONTEND_DIR}/.env.production.example" "${FRONTEND_DIR}/.env"
@@ -115,11 +117,19 @@ fi
 DOMAIN="$(env_get VITE_PUBLIC_DOMAIN app.freeyfi.com)"
 APP_API="$(env_get VITE_APP_API_BASE "https://${DOMAIN}/api")"
 
-touch "${FRONTEND_DIR}/.env"
-grep -qE '^VITE_APP_API_BASE=' "${FRONTEND_DIR}/.env" \
-  || echo "VITE_APP_API_BASE=${APP_API}" >>"${FRONTEND_DIR}/.env"
+sanitize_prod_env() {
+  touch "${FRONTEND_DIR}/.env"
+  grep -qE '^VITE_APP_API_BASE=' "${FRONTEND_DIR}/.env" \
+    || echo "VITE_APP_API_BASE=${APP_API}" >>"${FRONTEND_DIR}/.env"
+  # Strip dashboard/local Theme Studio URLs — not used on this production domain
+  if grep -qE '^VITE_DASHBOARD_API_BASE=' "${FRONTEND_DIR}/.env" 2>/dev/null; then
+    echo "==> Removing VITE_DASHBOARD_API_BASE from production .env"
+    sed -i -E '/^VITE_DASHBOARD_API_BASE=/d' "${FRONTEND_DIR}/.env"
+  fi
+  echo "    VITE_APP_API_BASE=$(env_get VITE_APP_API_BASE)"
+}
 
-echo "    VITE_APP_API_BASE=$(env_get VITE_APP_API_BASE)"
+sanitize_prod_env
 
 if [[ -d "${FRONTEND_DIR}/.git" ]]; then
   echo "==> Git pull (${BRANCH})"
@@ -129,12 +139,11 @@ else
   echo "==> No git remote — building local tree"
 fi
 
-# Re-apply production .env after reset (git may not track .env)
+# Re-apply after reset (.env is usually gitignored and may be wiped or stale)
 if [[ ! -f "${FRONTEND_DIR}/.env" ]] && [[ -f "${FRONTEND_DIR}/.env.production.example" ]]; then
   cp "${FRONTEND_DIR}/.env.production.example" "${FRONTEND_DIR}/.env"
 fi
-grep -qE '^VITE_APP_API_BASE=' "${FRONTEND_DIR}/.env" 2>/dev/null \
-  || echo "VITE_APP_API_BASE=${APP_API}" >>"${FRONTEND_DIR}/.env"
+sanitize_prod_env
 
 echo "==> free -h (expect swap if RAM is tight)"
 free -h || true
@@ -169,6 +178,6 @@ fi
 echo ""
 echo "==> Frontend done"
 echo "    dist: ${DIST_DIR}"
-echo "    SPA:  /  /contact  /privacy  /admin/*"
-echo "    API:  /api/* (backend)   Django admin: /django-admin/"
+echo "    SPA:  /  /contact  /privacy"
+echo "    API:  /api/* (backend)   Django admin: /admin/"
 ls -la "${DIST_DIR}" | head -n 20

@@ -16,10 +16,10 @@ See the [monorepo README](../README.md) for full setup, deployment, and GitLab C
 | `/` | Landing, APK downloads | `y_fi_backend` |
 | `/contact` | Contact form | `y_fi_backend` |
 | `/privacy` | Privacy policy | — |
-| `/admin/login` | Theme Studio login | `dashboard-backend` |
-| `/admin/theme` | Theme editor | `dashboard-backend` |
+| `/admin/login` | Theme Studio login (local only; production `/admin` is Django) | `dashboard-backend` |
+| `/admin/theme` | Theme editor (local only) | `dashboard-backend` |
 
-On production (same droplet as `y_fi_backend`), nginx serves this SPA at domain root. Django admin is at `/django-admin/` so it does not clash with `/admin/*`. See [`deploy/README.md`](deploy/README.md).
+On production (same droplet as `y_fi_backend`), nginx serves this SPA at `/` and **Django admin at `/admin/`**. See [`deploy/README.md`](deploy/README.md).
 
 ---
 

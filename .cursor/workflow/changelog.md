@@ -6,6 +6,44 @@ All changes to `y_fi_frontend` must be logged here newest-first.
 
 ---
 
+## 2026-08-01 15:28 (UTC+6) — No dashboard.freeyfi; /admin is Django
+
+**Time:** 2026-08-01 15:28 (UTC+6)
+**Author:** Cursor AI agent
+**Type:** Architecture
+
+### Changed
+- Production deploy no longer sets `VITE_DASHBOARD_API_BASE` / `dashboard.freeyfi.com`
+- `.env.production.example` — `VITE_APP_API_BASE` only
+- Docs: production `/admin/` is Django admin via nginx, not Theme Studio
+
+### API impact
+- None for marketing SPA
+
+### DB impact
+- None
+
+---
+
+## 2026-08-01 15:25 (UTC+6) — Stop baking localhost dashboard API into prod
+
+**Time:** 2026-08-01 15:25 (UTC+6)
+**Author:** Cursor AI agent
+**Type:** Bug fix
+
+### Changed
+- `deploy/deploy.sh` — replaces `VITE_DASHBOARD_API_BASE` localhost/127.0.0.1 with `https://dashboard.freeyfi.com/api` before build
+- `.env.production.example` — documents both app + dashboard production URLs
+- `/admin/login` uses `DASHBOARD_API_BASE` (theme-api), not `APP_API_BASE`
+
+### API impact
+- Production Theme Studio must call dashboard-backend, not 127.0.0.1:8001
+
+### DB impact
+- None
+
+---
+
 ## 2026-08-01 15:21 (UTC+6) — Drop unsupported .yarnrc.yml keys
 
 **Time:** 2026-08-01 15:21 (UTC+6)
