@@ -1,6 +1,6 @@
 # FreeYFi frontend — same domain as API
 
-Marketing SPA + Theme Studio UI share `app.freeyfi.com` with `y_fi_backend`.
+Marketing SPA shares `app.freeyfi.com` with `y_fi_backend`. This deploy configures **only** the main app API (same origin). Dashboard is not part of this setup.
 
 ## Route split (no conflicts)
 
@@ -20,7 +20,7 @@ This script only builds `dist/` and reloads nginx.
 ```bash
 git clone <URL> /var/www/y_fi_frontend
 cd /var/www/y_fi_frontend
-cp .env.example .env   # set VITE_* for production
+cp .env.production.example .env
 sudo bash deploy/deploy.sh
 ```
 
@@ -33,16 +33,12 @@ sudo bash deploy/deploy.sh
 ## Production `.env`
 
 ```env
-# Same-origin main API (contact form, etc.)
 VITE_APP_API_BASE=https://app.freeyfi.com/api
-
-# Theme Studio still talks to dashboard-backend (separate host)
-VITE_DASHBOARD_API_BASE=https://dashboard.freeyfi.com/api
 ```
 
 ## Order on a new droplet
 
-1. `sudo bash y_fi_backend/deploy/deploy.sh` — nginx + SSL + API  
-2. `sudo bash y_fi_frontend/deploy/deploy.sh` — SPA at domain root  
+1. `sudo bash /var/www/y_fi_backend/deploy/deploy.sh` — nginx + SSL + API  
+2. `sudo bash /var/www/y_fi_frontend/deploy/deploy.sh` — SPA at domain root  
 
 `FRONTEND_DIR` must match what backend nginx uses (default `/var/www/y_fi_frontend`). Set `FRONTEND_DIR` in backend `.env` if you use another path.

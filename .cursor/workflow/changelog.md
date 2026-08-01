@@ -6,6 +6,26 @@ All changes to `y_fi_frontend` must be logged here newest-first.
 
 ---
 
+## 2026-08-01 15:13 (UTC+6) — Frontend deploy: main API only
+
+**Time:** 2026-08-01 15:13 (UTC+6)
+**Author:** Cursor AI agent
+**Type:** Enhancement
+
+### Changed
+- `deploy/deploy.sh` — configures only `VITE_APP_API_BASE` (same-origin `y_fi_backend`); no dashboard env
+- `.env.production.example` — production template with app API only
+- `.env.example` — local optional overrides; dashboard left commented
+- `deploy/README.md` — documents main-API-only same-domain deploy
+
+### API impact
+- None
+
+### DB impact
+- None
+
+---
+
 ## 2026-08-01 00:06 (UTC+6) — Rename script to deploy.sh
 
 **Time:** 2026-08-01 00:06 (UTC+6)

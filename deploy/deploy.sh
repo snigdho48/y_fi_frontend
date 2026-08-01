@@ -78,28 +78,27 @@ if ! command -v yarn >/dev/null 2>&1; then
   npm install -g yarn@1.22.22 2>/dev/null || corepack prepare yarn@stable --activate
 fi
 
-# ----- .env for production build (same-origin API) -----
+# ----- .env for production build (same-origin y_fi_backend only) -----
+# Dashboard API is not configured here — Theme Studio keeps its code default
+# or a local .env when you work on dashboard-backend separately.
 if [[ ! -f "${FRONTEND_DIR}/.env" ]]; then
-  if [[ -f "${FRONTEND_DIR}/.env.example" ]]; then
+  if [[ -f "${FRONTEND_DIR}/.env.production.example" ]]; then
+    cp "${FRONTEND_DIR}/.env.production.example" "${FRONTEND_DIR}/.env"
+    echo "==> Created .env from .env.production.example"
+  elif [[ -f "${FRONTEND_DIR}/.env.example" ]]; then
     cp "${FRONTEND_DIR}/.env.example" "${FRONTEND_DIR}/.env"
-    echo "==> Created .env from .env.example — edit VITE_* then re-run if needed"
+    echo "==> Created .env from .env.example — edit VITE_APP_API_BASE if needed"
   fi
 fi
 
-# Sensible production defaults when unset (same domain as API)
 DOMAIN="$(env_get VITE_PUBLIC_DOMAIN app.freeyfi.com)"
 APP_API="$(env_get VITE_APP_API_BASE "https://${DOMAIN}/api")"
-DASH_API="$(env_get VITE_DASHBOARD_API_BASE "https://dashboard.freeyfi.com/api")"
 
-# Ensure keys exist so Vite embeds them at build time
 touch "${FRONTEND_DIR}/.env"
 grep -qE '^VITE_APP_API_BASE=' "${FRONTEND_DIR}/.env" \
   || echo "VITE_APP_API_BASE=${APP_API}" >>"${FRONTEND_DIR}/.env"
-grep -qE '^VITE_DASHBOARD_API_BASE=' "${FRONTEND_DIR}/.env" \
-  || echo "VITE_DASHBOARD_API_BASE=${DASH_API}" >>"${FRONTEND_DIR}/.env"
 
 echo "    VITE_APP_API_BASE=$(env_get VITE_APP_API_BASE)"
-echo "    VITE_DASHBOARD_API_BASE=$(env_get VITE_DASHBOARD_API_BASE)"
 
 if [[ -d "${FRONTEND_DIR}/.git" ]]; then
   echo "==> Git pull (${BRANCH})"
