@@ -6,6 +6,23 @@ All changes to `y_fi_frontend` must be logged here newest-first.
 
 ---
 
+## 2026-08-01 15:21 (UTC+6) — Drop unsupported .yarnrc.yml keys
+
+**Time:** 2026-08-01 15:21 (UTC+6)
+**Author:** Cursor AI agent
+**Type:** Bug fix
+
+### Changed
+- `.yarnrc.yml` — removed `npmMinimalAgeGate` / `approvedGitRepositories` (not supported on droplet Yarn; aborted install)
+
+### API impact
+- None
+
+### DB impact
+- None
+
+---
+
 ## 2026-08-01 15:18 (UTC+6) — Drop invalid YARN_CHILD_CONCURRENCY
 
 **Time:** 2026-08-01 15:18 (UTC+6)
