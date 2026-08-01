@@ -42,7 +42,7 @@ export YARN_ENABLE_IMMUTABLE_INSTALLS=false
 export YARN_ENABLE_TELEMETRY=0
 # Low concurrency keeps RAM usable on 1 GB droplets (+ swap)
 export YARN_NETWORK_CONCURRENCY="${YARN_NETWORK_CONCURRENCY:-4}"
-export YARN_CHILD_CONCURRENCY="${YARN_CHILD_CONCURRENCY:-2}"
+# Do not set YARN_CHILD_CONCURRENCY — unsupported in Yarn 4 and aborts install.
 
 env_get() {
   local key="$1" default="${2:-}"

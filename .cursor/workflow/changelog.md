@@ -6,6 +6,23 @@ All changes to `y_fi_frontend` must be logged here newest-first.
 
 ---
 
+## 2026-08-01 15:18 (UTC+6) — Drop invalid YARN_CHILD_CONCURRENCY
+
+**Time:** 2026-08-01 15:18 (UTC+6)
+**Author:** Cursor AI agent
+**Type:** Bug fix
+
+### Changed
+- `deploy/deploy.sh` — removed `YARN_CHILD_CONCURRENCY` (not supported in Yarn 4; caused install abort)
+
+### API impact
+- None
+
+### DB impact
+- None
+
+---
+
 ## 2026-08-01 15:16 (UTC+6) — Unstick yarn install on 1 GB droplet
 
 **Time:** 2026-08-01 15:16 (UTC+6)
